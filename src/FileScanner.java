@@ -11,36 +11,38 @@ public class FileScanner {
         System.out.println("Введите порядковый номер слова");
         Scanner sc = new Scanner(System.in);
         int wordNumber = sc.nextInt();
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(filepath))) {// использована конструкция try-with-resource
-            ArrayList<String> superpositionOfWords = new ArrayList<>();
-            while (true) {
-                String lineFromFile = reader.readLine();
-                if (lineFromFile == null) {
-                    break;
+        try {
+            try (BufferedReader reader = Files.newBufferedReader(Paths.get(filepath))) {// использована конструкция try-with-resource
+                ArrayList<String> superpositionOfWords = new ArrayList<>();
+                while (true) {
+                    String lineFromFile = reader.readLine();
+                    if (lineFromFile == null) {
+                        break;
+                    }
+                    String[] lineElement = lineFromFile.split(" ");
+                    try {
+                        superpositionOfWords.add(lineElement[wordNumber - 1]);
+                    } catch (Exception e) {
+                        System.out.println("В этой строке нет " + wordNumber + " слова.\nСообщение об ошибке: " + e.getMessage());//вывод ошибки
+                        return superpositionOfWords; //вывод сообщения об ошибке + код ошибки
+                    }
                 }
-                String[] lineElement = lineFromFile.split(" ");
-                try {
-                    superpositionOfWords.add(lineElement[wordNumber - 1]);
-                } catch (Exception e) {
-                    System.out.println("В этой строке нет " + wordNumber + " слова.\nСообщение об ошибке: " + e.getMessage());//вывод ошибки
-                    return superpositionOfWords; //вывод сообщения об ошибке + код ошибки
-                }
+                System.out.println(superpositionOfWords);
+                return superpositionOfWords;
+
+            } catch (IOException e) {
+                throw new RuntimeException("Что-то пошло не так");
             }
-            System.out.println(superpositionOfWords);
-            return superpositionOfWords;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("мы не знаем как с этим разобраться!", e);
+        }
+            //e.printStackTrace();//Это не  rethrow - переделать
+        }
 
-        } catch (IOException e) {
-            e.printStackTrace();//Это не  rethrow!! - переделать
-            return new ArrayList<>();
-
+        public static void main (String[]args){
+            System.out.println("Находим каждое N слово в строке из файла Text1");
+            readFile("Text1.txt");
+            System.out.println("_______________________________\nНаходим каждое N слово в строке из файла Text2");
+            readFile("Text2.txt");
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println("Находим каждое N слово в строке из файла Text1");
-        readFile("Text1.txt");
-        System.out.println("_______________________________\nНаходим каждое N слово в строке из файла Text2");
-        readFile("Text2.txt");
-    }
-
-}
