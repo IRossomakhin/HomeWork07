@@ -8,12 +8,13 @@ import java.util.Scanner;
 public class FileScanner {
 
     static public ArrayList<String> readFile(String filepath) {
+        ArrayList<String> superpositionOfWords = new ArrayList<>();
         System.out.println("Введите порядковый номер слова");
         Scanner sc = new Scanner(System.in);
         int wordNumber = sc.nextInt();
         try {
             try (BufferedReader reader = Files.newBufferedReader(Paths.get(filepath))) {// использована конструкция try-with-resource
-                ArrayList<String> superpositionOfWords = new ArrayList<>();
+
                 while (true) {
                     String lineFromFile = reader.readLine();
                     if (lineFromFile == null) {
@@ -23,7 +24,7 @@ public class FileScanner {
                     try {
                         superpositionOfWords.add(lineElement[wordNumber - 1]);
                     } catch (Exception e) {
-                        System.out.println("В этой строке нет " + wordNumber + " слова.\nСообщение об ошибке: " + e.getMessage());//вывод ошибки
+                        System.err.println("В этой строке нет " + wordNumber + " слова.\nСообщение об ошибке: " + e.getMessage());//вывод ошибки
                         return superpositionOfWords; //вывод сообщения об ошибке + код ошибки
                     }
                 }
@@ -34,15 +35,17 @@ public class FileScanner {
                 throw new RuntimeException("Что-то пошло не так");
             }
         } catch (RuntimeException e) {
-            throw new RuntimeException("мы не знаем как с этим разобраться!", e);
+            e.printStackTrace();//Это не  rethrow - переделать
+            throw e ;
         }
-            //e.printStackTrace();//Это не  rethrow - переделать
-        }
+        //return superpositionOfWords;
 
-        public static void main (String[]args){
-            System.out.println("Находим каждое N слово в строке из файла Text1");
-            readFile("Text1.txt");
-            System.out.println("_______________________________\nНаходим каждое N слово в строке из файла Text2");
-            readFile("Text2.txt");
-        }
     }
+
+    public static void main(String[] args) {
+        System.out.println("Находим каждое N слово в строке из файла Text1");
+        readFile("Text1.txt");
+        System.out.println("_______________________________\nНаходим каждое N слово в строке из файла Text2");
+        readFile("Text2.txt");
+    }
+}
